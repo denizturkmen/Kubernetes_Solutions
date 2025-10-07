@@ -1,0 +1,65 @@
+kubeProxyReplacement: true
+k8sServiceHost: 192.168.1.40
+k8sServicePort: 6443
+
+l2announcements:
+  enabled: true
+
+ipam:
+  mode: cluster-pool
+  operator:
+    clusterPoolIPv4PodCIDRList:
+      - "192.168.0.0/16"
+    clusterPoolIPv4MaskSize: 24
+
+hubble:
+  enabled: true
+
+  metrics:
+    enabled:
+      - dns
+      - drop
+      - tcp
+      - flow
+      - port-distribution
+      - icmp
+      - http
+    enableOpenMetrics: true
+    serviceMonitor:
+      enabled: true
+    service:
+      enabled: true
+
+  relay:
+    enabled: true
+    metrics:
+      enabled: true
+      port: 9965
+      protocol: TCP
+      targetPort: 9965
+      serviceMonitor:
+        enabled: true
+      service:
+        enabled: true
+
+  ui:
+    enabled: true
+    service:
+      type: NodePort
+      nodePort: 31647
+
+operator:
+  enabled: true
+  replicas: 1
+
+agent: true
+
+prometheus:
+  enabled: true
+  port: 9962
+  serviceMonitor:
+    enabled: true
+  service:
+    enabled: true
+tls:
+  enabled: false

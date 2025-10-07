@@ -87,6 +87,12 @@ helm upgrade --install cilium cilium/cilium \
   --namespace kube-system \
   -f values-prod.yaml
 
+---
+## latest
+helm upgrade --install cilium cilium/cilium \
+  --version 1.18.0 \
+  --namespace kube-system \
+  -f cilium-values.yaml
 
 
 ```
