@@ -40,8 +40,6 @@ disable:
   - rke2-canal
   - rke2-ingress-nginx
 disable-kube-proxy: true
-tls-san:
-  - "192.168.1.40"
 EOF
 
 # install
