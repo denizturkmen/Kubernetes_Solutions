@@ -30,6 +30,20 @@ sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
 node-name: k8s-master-1
 EOF
 
+# disable default component
+sudo mkdir -p /etc/rancher/rke2
+sudo tee /etc/rancher/rke2/config.yaml > /dev/null << 'EOF'
+node-name: k8s-master-1
+write-kubeconfig-mode: "0644"
+node-ip: "192.168.1.40"
+disable:
+  - rke2-canal
+  - rke2-ingress-nginx
+disable-kube-proxy: true
+tls-san:
+  - "192.168.1.40"
+EOF
+
 # install
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" sh -
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" INSTALL_RKE2_VERSION="v1.30.4+rke2r1" sh -
@@ -69,9 +83,9 @@ EOF
 
 # apply
 sudo tee /etc/rancher/rke2/config.yaml > /dev/null <<EOF
-server: https://192.168.1.41:9345
+server: https://192.168.1.40:9345
 node-name: k8s-worker-1
-token: K10039a860835a6e123bf568c8e775ea574170c46b03da20a4413d9beef5b6d75e8::server:69f1916a54924276f318570f09b41678
+token: K10b4a5494e0643994ee72c9d813e3aeced9052eb3f6bc64dd4e4cb0012b7f71421::server:cbfb4d619592c3ece1dbbe24ff48090a
 EOF
 
 # Starting Service
@@ -104,6 +118,26 @@ mv ./kubectl ~/.local/bin/kubectl
 
 # check
 kubectl version
+
+
+# 2.way
+sudo apt-get update
+
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+
+# If the folder `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
+sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
+
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list  
+
+# Install
+sudo apt-get update
+sudo apt-get install -y kubectl
 
 ```
 
