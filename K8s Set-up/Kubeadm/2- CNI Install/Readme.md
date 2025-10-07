@@ -88,7 +88,9 @@ helm upgrade --install cilium cilium/cilium \
   -f values-prod.yaml
 
 ---
-## latest
+## latest & promethues
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+---
 helm upgrade --install cilium cilium/cilium \
   --version 1.18.0 \
   --namespace kube-system \
