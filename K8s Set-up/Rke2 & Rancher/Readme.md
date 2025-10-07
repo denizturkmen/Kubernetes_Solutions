@@ -32,6 +32,8 @@ EOF
 
 # install
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" sh -
+curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="server" INSTALL_RKE2_VERSION="v1.30.4+rke2r1" sh -
+
 
 # Starting service
 sudo systemctl enable rke2-server.service
@@ -54,6 +56,7 @@ sudo cat /var/lib/rancher/rke2/server/node-token
 ``` bash
 # install
 curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="agent" sh -
+curl -sfL https://get.rke2.io | sudo INSTALL_RKE2_TYPE="agent" INSTALL_RKE2_VERSION="v1.30.4+rke2r1" sh -
 
 # Preparing config file: Creating file
 sudo mkdir -p /etc/rancher/rke2
@@ -221,9 +224,37 @@ helm install rancher rancher-latest/rancher \
   --set autoscaling.minReplicas=2 \
   --set autoscaling.maxReplicas=5 \
   --set autoscaling.targetCPUUtilizationPercentage=80
----
 
 
+```
+
+## CleanUP
+``` bash
+# stop rke2 service
+sudo systemctl stop rke2-server
+sudo systemctl disable rke2-server
+sudo systemctl stop rke2-agent
+sudo systemctl disable rke2-agent
+
+# Remove Directories and Data
+sudo rm -rf /etc/rancher/rke2
+sudo rm -rf /var/lib/rancher/rke2
+sudo rm -rf /var/lib/kubelet
+sudo rm -rf /etc/systemd/system/rke2*.service
+sudo rm -rf /usr/local/lib/systemd/system/rke2*.service
+sudo rm -rf /usr/local/bin/rke2*
+sudo rm -rf /var/lib/cni/
+sudo rm -rf /opt/cni/
+sudo rm -rf /run/k3s
+sudo rm -rf /run/flannel
+sudo rm -rf /etc/cni/
+
+# Remove RKE2 Binary and Logs
+sudo rm -f /usr/local/bin/rke2
+sudo rm -rf /var/log/rke2*
+
+# Verify Clean Removal
+which rke2
 
 
 ```
